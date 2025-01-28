@@ -62,7 +62,7 @@ const FeatureTab = ({
   // Template for the radial gradient mask
   const maskImage = useMotionTemplate`radial-gradient(80px 80px at ${xPercentage}% ${yPercentage}%, black, transparent)`
 
-  // Run radial animation when the tab is selected
+// Run radial animation when the tab is selected
   useEffect(() => {
     if (!tabRef.current || !selected) return
 
@@ -87,13 +87,14 @@ const FeatureTab = ({
       times,
       duration: 4,
       repeat: Infinity,
-      ease: 'linear',
-      repeatType: 'loop',
+      ease: 'linear' as any,
     }
 
-     // Animate the x and y percentages in a loop
-    animate(xPercentage, [0, 100, 100, 0, 0], animationOptions as any)
-    animate(yPercentage, [0, 0, 100, 100, 0], animationOptions as any)
+    // Use `animate` to update MotionValue explicitly
+    animate(xPercentage, [0], { ...animationOptions })
+    animate(xPercentage, [100], { ...animationOptions })
+    animate(yPercentage, [0], { ...animationOptions })
+    animate(yPercentage, [100], { ...animationOptions })
   }, [selected, xPercentage, yPercentage])
 
   // Play the Lottie animation on hover
