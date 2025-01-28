@@ -7,12 +7,12 @@ import { useTransform } from 'motion/react'
 import { useMotionTemplate } from 'motion/react'
 import { useMotionValue } from 'framer-motion'
 
-const useRelativeMousePosition = (elementRef) => {
+const useRelativeMousePosition = (elementRef: RefObject<HTMLElement>) => {
   const mouseX = useMotionValue(0) // Tracks the X position
   const mouseY = useMotionValue(0) // Tracks the Y position
 
   // Helper to calculate relative mouse position
-  const getRelativePosition = (event) => {
+  const getRelativePosition = (event: MouseEvent) => {
     if (!elementRef.current) return { x: 0, y: 0 }
     const { top, left } = elementRef.current.getBoundingClientRect()
     return {
@@ -22,7 +22,7 @@ const useRelativeMousePosition = (elementRef) => {
   }
 
   // Updates the motion values based on mouse movement
-  const handleMouseMove = (event) => {
+  const handleMouseMove = (event: MouseEvent) => {
     const { x, y } = getRelativePosition(event)
     mouseX.set(x)
     mouseY.set(y)
