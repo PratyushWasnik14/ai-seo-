@@ -91,16 +91,16 @@ const FeatureTab = ({
       repeatType: 'loop',
     }
 
-    // Animate the x and y percentages in a loop
-    animate(xPercentage, [0, 100, 100, 0, 0], animationOptions)
-    animate(yPercentage, [0, 0, 100, 100, 0], animationOptions)
+     // Animate the x and y percentages in a loop
+    animate(xPercentage, [0, 100, 100, 0, 0], animationOptions as any)
+    animate(yPercentage, [0, 0, 100, 100, 0], animationOptions as any)
   }, [selected, xPercentage, yPercentage])
 
   // Play the Lottie animation on hover
   const handleHover = () => {
     if (dotLottieRef.current) {
-      dotLottieRef.current.seek(0)
-      dotLottieRef.current.play()
+      ;(dotLottieRef.current as any).seek(0) // Ensure it starts from the beginning
+      ;(dotLottieRef.current as any).play() // Play the animation
     }
   }
 
