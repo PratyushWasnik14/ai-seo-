@@ -50,7 +50,7 @@ export const CallToAction = () => {
 
   const [mouseX, mouseY] = useRelativeMousePosition(borderedDivRef)
 
-  const maskImage = useMotionTemplate`radial-gradient(50% 50% at ${mouseX}px ${mouseY}px,black,transparent)`
+  const maskImage = useMotionTemplate`radial-gradient(50% 50% at ${mouseX.get()}px ${mouseY.get()}px,black,transparent)`
   return (
     <section className="py-20 md:py-24" ref={sectionRef}>
       <div className="container">
