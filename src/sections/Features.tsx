@@ -1,12 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import {
-  motion,
-  useMotionValue,
-  useMotionTemplate,
-  animate,
-} from 'framer-motion'
+import { motion, useMotionValue, useMotionTemplate, animate } from 'framer-motion'
 import { DotLottiePlayer } from '@dotlottie/react-player'
 import Image from 'next/image'
 import productImage from '@/assets/product-image.png'
@@ -53,16 +48,14 @@ const FeatureTab = ({
   selected: boolean
   onClick: () => void
 }) => {
-  const tabRef = useRef<HTMLDivElement>(null) // Reference to the tab container
-  const dotLottieRef = useRef(null) // Reference to the Lottie animation player
+  const tabRef = useRef<HTMLDivElement>(null)
+  const dotLottieRef = useRef(null)
 
-  const xPercentage = useMotionValue(100) // Horizontal percentage for radial gradient
-  const yPercentage = useMotionValue(0) // Vertical percentage for radial gradient
+  const xPercentage = useMotionValue(100)
+  const yPercentage = useMotionValue(0)
 
-  // Template for the radial gradient mask
   const maskImage = useMotionTemplate`radial-gradient(80px 80px at ${xPercentage}% ${yPercentage}%, black, transparent)`
 
-// Run radial animation when the tab is selected
   useEffect(() => {
     if (!tabRef.current || !selected) return
 
@@ -70,11 +63,9 @@ const FeatureTab = ({
     xPercentage.set(0)
     yPercentage.set(0)
 
-    // Calculate dimensions for animation
     const { height, width } = tabRef.current.getBoundingClientRect()
     const circumference = (height + width) * 2
 
-    // Define animation times for each corner
     const times = [
       0,
       width / circumference,
@@ -87,28 +78,20 @@ const FeatureTab = ({
       times,
       duration: 4,
       repeat: Infinity,
-      ease: 'linear' as any,
+      ease: 'linear',
+      repeatType: 'loop',
     }
 
-    // Use `animate` to update MotionValue explicitly
-    animate(xPercentage, [0], { ...animationOptions })
-    animate(xPercentage, [100], { ...animationOptions })
-    animate(yPercentage, [0], { ...animationOptions })
-    animate(yPercentage, [100], { ...animationOptions })
+    animate(xPercentage, [0, 100, 100, 0, 0], animationOptions as any)
+    animate(yPercentage, [0, 0, 100, 100, 0], animationOptions as any)
   }, [selected, xPercentage, yPercentage])
 
-  // Play the Lottie animation on hover
-  const handleHover = () => {
-    if (dotLottieRef.current) {
-      ;(dotLottieRef.current as any).seek(0) // Ensure it starts from the beginning
-      ;(dotLottieRef.current as any).play() // Play the animation
-    }
-  }
+  
 
   return (
     <div
       ref={tabRef}
-      onMouseEnter={handleHover}
+      
       onClick={onClick}
       className="border border-white/15 flex p-2.5 rounded-xl gap-2.5 items-center lg:flex-1 relative"
     >
@@ -141,22 +124,18 @@ const FeatureTab = ({
 
 // Main component for the feature section
 export const Features = () => {
-  const [selectedTab, setSelectedTab] = useState(0) // Currently selected tab
+  const [selectedTab, setSelectedTab] = useState(0)
 
-  // Motion values for background position and size
   const backgroundPositionX = useMotionValue(tabs[0].backgroundPositionX)
   const backgroundPositionY = useMotionValue(tabs[0].backgroundPositionY)
   const backgroundSizeX = useMotionValue(tabs[0].backgroundSizeX)
 
-  // Template for background styles
   const backgroundPosition = useMotionTemplate`${backgroundPositionX}% ${backgroundPositionY}%`
   const backgroundSize = useMotionTemplate`${backgroundSizeX}% auto`
 
-  // Handle tab selection and animate background
   const handleTabSelect = (index: number) => {
     setSelectedTab(index)
 
-    // Animate background size
     animate(
       backgroundSizeX,
       [backgroundSizeX.get(), 100, tabs[index].backgroundSizeX],
@@ -166,7 +145,6 @@ export const Features = () => {
       }
     )
 
-    // Animate background position
     animate(
       backgroundPositionX,
       [backgroundPositionX.get(), tabs[index].backgroundPositionX],
