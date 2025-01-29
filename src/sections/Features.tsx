@@ -1,10 +1,14 @@
 'use client'
-
 import { useState, useRef, useEffect } from 'react'
-import { motion, useMotionValue, useMotionTemplate, animate } from 'framer-motion'
+import {
+  motion,
+  useMotionValue,
+  useMotionTemplate,
+  animate,
+} from 'framer-motion'
 import { DotLottiePlayer } from '@dotlottie/react-player'
-import Image from 'next/image'
 import productImage from '@/assets/product-image.png'
+import Image from 'next/image'
 
 // Tab configuration data
 const tabs = [
@@ -34,7 +38,12 @@ const tabs = [
   },
 ]
 
-// Tab component for individual tabs
+// Define the interface for the DotLottiePlayer instance
+interface DotLottiePlayerInstance {
+  seek: (frame: number) => void
+  play: () => void
+}
+
 const FeatureTab = ({
   title,
   icon,
@@ -49,7 +58,7 @@ const FeatureTab = ({
   onClick: () => void
 }) => {
   const tabRef = useRef<HTMLDivElement>(null)
-  const dotLottieRef = useRef(null)
+  const dotLottieRef = useRef<DotLottiePlayerInstance>(null)
 
   const xPercentage = useMotionValue(100)
   const yPercentage = useMotionValue(0)
@@ -59,7 +68,6 @@ const FeatureTab = ({
   useEffect(() => {
     if (!tabRef.current || !selected) return
 
-    // Reset radial gradient positions
     xPercentage.set(0)
     yPercentage.set(0)
 
@@ -86,12 +94,17 @@ const FeatureTab = ({
     animate(yPercentage, [0, 0, 100, 100, 0], animationOptions as any)
   }, [selected, xPercentage, yPercentage])
 
-  
+  const handleHover = () => {
+    if (dotLottieRef.current) {
+      dotLottieRef.current.seek(0)
+      dotLottieRef.current.play()
+    }
+  }
 
   return (
     <div
       ref={tabRef}
-      
+      onMouseEnter={handleHover}
       onClick={onClick}
       className="border border-white/15 flex p-2.5 rounded-xl gap-2.5 items-center lg:flex-1 relative"
     >
@@ -104,7 +117,7 @@ const FeatureTab = ({
 
       <div className="h-12 w-12 border border-white/15 rounded-lg flex items-center justify-center">
         <DotLottiePlayer
-          ref={dotLottieRef}
+          ref={dotLottieRef as any}
           src={icon}
           className="h-5 w-5"
           autoplay
@@ -122,7 +135,6 @@ const FeatureTab = ({
   )
 }
 
-// Main component for the feature section
 export const Features = () => {
   const [selectedTab, setSelectedTab] = useState(0)
 
@@ -175,7 +187,6 @@ export const Features = () => {
           revolutionized SEO.
         </p>
 
-        {/* Tab navigation */}
         <div className="mt-10 flex flex-col lg:flex-row gap-3">
           {tabs.map((tab, index) => (
             <FeatureTab
@@ -187,7 +198,6 @@ export const Features = () => {
           ))}
         </div>
 
-        {/* Background image section */}
         <div className="border border-white/20 p-2.5 rounded-xl mt-3">
           <motion.div
             className="aspect-video bg-cover border border-white/20 rounded-lg"
@@ -202,3 +212,5 @@ export const Features = () => {
     </section>
   )
 }
+
+export default Features
