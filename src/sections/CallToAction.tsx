@@ -1,15 +1,14 @@
 'use client'
-import { motion, useScroll } from 'motion/react'
+import { motion, useScroll, MotionValue, useTransform, useMotionTemplate, useMotionValue } from 'framer-motion'
 import starsBg from '@/assets/stars.png'
 import gridLines from '@/assets/grid-lines.png'
 import { RefObject, useEffect, useRef } from 'react'
-import { useTransform } from 'motion/react'
-import { useMotionTemplate } from 'motion/react'
-import { useMotionValue } from 'framer-motion'
+// Removed duplicate imports
 
 const useRelativeMousePosition = (elementRef: RefObject<HTMLElement>) => {
-  const mouseX = useMotionValue(0) // Tracks the X position
-  const mouseY = useMotionValue(0) // Tracks the Y position
+  const mouseX: MotionValue<number> = useMotionValue(0)
+  const mouseY: MotionValue<number> = useMotionValue(0)
+
 
   // Helper to calculate relative mouse position
   const getRelativePosition = (event: MouseEvent) => {
@@ -51,6 +50,7 @@ export const CallToAction = () => {
   const [mouseX, mouseY] = useRelativeMousePosition(borderedDivRef)
 
   const maskImage = useMotionTemplate`radial-gradient(50% 50% at ${mouseX}px ${mouseY}px,black,transparent)`
+  
   return (
     <section className="py-20 md:py-24" ref={sectionRef}>
       <div className="container">
