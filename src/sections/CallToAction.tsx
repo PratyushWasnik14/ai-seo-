@@ -1,209 +1,106 @@
 'use client'
+import {
+  motion,
+  useScroll,
+  MotionValue,
+  useTransform,
+  useMotionTemplate,
+  useMotionValue,
+} from 'framer-motion'
+import starsBg from '@/assets/stars.png'
+import gridLines from '@/assets/grid-lines.png'
+import { RefObject, useEffect, useRef } from 'react'
 
-import { useState, useRef, useEffect } from 'react'
-import { motion, useMotionValue, useMotionTemplate, animate } from 'framer-motion'
-import { DotLottiePlayer } from '@dotlottie/react-player'
-import Image from 'next/image'
-import productImage from '@/assets/product-image.png'
+const useRelativeMousePosition = (elementRef: RefObject<HTMLElement>) => {
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
 
-// Tab configuration data
-const tabs = [
-  {
-    icon: '/assets/lottie/vroom.lottie',
-    title: 'User-friendly dashboard',
-    isNew: false,
-    backgroundPositionX: 0,
-    backgroundPositionY: 0,
-    backgroundSizeX: 150,
-  },
-  {
-    icon: '/assets/lottie/click.lottie',
-    title: 'One-click optimization',
-    isNew: false,
-    backgroundPositionX: 98,
-    backgroundPositionY: 100,
-    backgroundSizeX: 135,
-  },
-  {
-    icon: '/assets/lottie/stars.lottie',
-    title: 'Smart keyword generator',
-    isNew: true,
-    backgroundPositionX: 100,
-    backgroundPositionY: 27,
-    backgroundSizeX: 177,
-  },
-]
+  const getRelativePosition = (event: MouseEvent) => {
+    if (!elementRef.current) return { x: 0, y: 0 }
+    const { top, left } = elementRef.current.getBoundingClientRect()
+    return {
+      x: event.x - left,
+      y: event.y - top,
+    }
+  }
 
-// Tab component for individual tabs
-const FeatureTab = ({
-  title,
-  icon,
-  isNew,
-  selected,
-  onClick,
-}: {
-  title: string
-  icon: string
-  isNew: boolean
-  selected: boolean
-  onClick: () => void
-}) => {
-  const tabRef = useRef<HTMLDivElement>(null)
-  const dotLottieRef = useRef(null)
-
-  const xPercentage = useMotionValue(100)
-  const yPercentage = useMotionValue(0)
-
-  const maskImage = useMotionTemplate`radial-gradient(80px 80px at ${xPercentage}% ${yPercentage}%, black, transparent)`
+  const handleMouseMove = (event: MouseEvent) => {
+    const { x, y } = getRelativePosition(event)
+    mouseX.set(x)
+    mouseY.set(y)
+  }
 
   useEffect(() => {
-    if (!tabRef.current || !selected) return
-
-    // Reset radial gradient positions
-    xPercentage.set(0)
-    yPercentage.set(0)
-
-    const { height, width } = tabRef.current.getBoundingClientRect()
-    const circumference = (height + width) * 2
-
-    const times = [
-      0,
-      width / circumference,
-      (width + height) / circumference,
-      (width * 2 + height) / circumference,
-      1,
-    ]
-
-    const animationOptions = {
-      times,
-      duration: 4,
-      repeat: Infinity,
-      ease: 'linear',
-      repeatType: 'loop',
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
     }
+  }, [elementRef])
 
-    animate(xPercentage, [0, 100, 100, 0, 0], animationOptions as any)
-    animate(yPercentage, [0, 0, 100, 100, 0], animationOptions as any)
-  }, [selected, xPercentage, yPercentage])
-
-  const handleHover = () => {
-    if (dotLottieRef.current) {
-      dotLottieRef.current.seek(0)
-      dotLottieRef.current.play()
-    }
-  }
-
-  return (
-    <div
-      ref={tabRef}
-      onMouseEnter={handleHover}
-      onClick={onClick}
-      className="border border-white/15 flex p-2.5 rounded-xl gap-2.5 items-center lg:flex-1 relative"
-    >
-      {selected && (
-        <motion.div
-          style={{ maskImage }}
-          className="absolute inset-0 border -m-px border-[#A369ff] rounded-lg"
-        />
-      )}
-
-      <div className="h-12 w-12 border border-white/15 rounded-lg flex items-center justify-center">
-        <DotLottiePlayer
-          ref={dotLottieRef}
-          src={icon}
-          className="h-5 w-5"
-          autoplay
-        />
-      </div>
-
-      <div className="font-medium">{title}</div>
-
-      {isNew && (
-        <div className="text-xs rounded-full px-2 py-0.5 bg-[#8c44ff] text-black font-semibold">
-          NEW
-        </div>
-      )}
-    </div>
-  )
+  return [mouseX, mouseY] as const // Type assertion to make the tuple readonly
 }
 
-// Main component for the feature section
-export const Features = () => {
-  const [selectedTab, setSelectedTab] = useState(0)
+export const CallToAction = () => {
+  const sectionRef = useRef<HTMLElement>(null)
+  const borderedDivRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  })
+  const backgroundPositionY = useTransform(scrollYProgress, [0, 1], [-300, 300])
 
-  const backgroundPositionX = useMotionValue(tabs[0].backgroundPositionX)
-  const backgroundPositionY = useMotionValue(tabs[0].backgroundPositionY)
-  const backgroundSizeX = useMotionValue(tabs[0].backgroundSizeX)
+  const [mouseX, mouseY] = useRelativeMousePosition(borderedDivRef)
 
-  const backgroundPosition = useMotionTemplate`${backgroundPositionX}% ${backgroundPositionY}%`
-  const backgroundSize = useMotionTemplate`${backgroundSizeX}% auto`
-
-  const handleTabSelect = (index: number) => {
-    setSelectedTab(index)
-
-    animate(
-      backgroundSizeX,
-      [backgroundSizeX.get(), 100, tabs[index].backgroundSizeX],
-      {
-        duration: 2,
-        ease: 'easeInOut',
-      }
-    )
-
-    animate(
-      backgroundPositionX,
-      [backgroundPositionX.get(), tabs[index].backgroundPositionX],
-      {
-        duration: 2,
-        ease: 'easeInOut',
-      }
-    )
-
-    animate(
-      backgroundPositionY,
-      [backgroundPositionY.get(), tabs[index].backgroundPositionY],
-      {
-        duration: 2,
-        ease: 'easeInOut',
-      }
-    )
-  }
+  const maskImage = useMotionTemplate`radial-gradient(50% 50% at ${mouseX}px ${mouseY}px, black, transparent)`
 
   return (
-    <section className="py-20 md:py-24">
+    <section className="py-20 md:py-24" ref={sectionRef}>
       <div className="container">
-        <h2 className="text-5xl md:text-6xl font-medium text-center">
-          Elevate your SEO efforts
-        </h2>
-        <p className="text-white/70 md:text-xl max-w-2xl mx-auto text-lg text-center mt-5">
-          From small start-ups to large enterprises, our AI-driven tool has
-          revolutionized SEO.
-        </p>
-
-        {/* Tab navigation */}
-        <div className="mt-10 flex flex-col lg:flex-row gap-3">
-          {tabs.map((tab, index) => (
-            <FeatureTab
-              key={index}
-              {...tab}
-              selected={selectedTab === index}
-              onClick={() => handleTabSelect(index)}
-            />
-          ))}
-        </div>
-
-        {/* Background image section */}
-        <div className="border border-white/20 p-2.5 rounded-xl mt-3">
-          <motion.div
-            className="aspect-video bg-cover border border-white/20 rounded-lg"
+        <motion.div
+          ref={borderedDivRef}
+          className="border border-white/15 py-24 rounded-xl overflow-hidden relative group"
+          animate={{
+            backgroundPositionX: starsBg.width,
+          }}
+          transition={{
+            ease: 'linear',
+            duration: 60,
+            repeat: Infinity,
+          }}
+          style={{
+            backgroundPositionY,
+            backgroundImage: `url(${starsBg.src})`,
+          }}
+        >
+          <div
+            className="absolute inset-0 bg-[rgb(74,32,138)] bg-blend-overlay [mask-image:radial-gradient(50%_50%_at_50%_35%,black,transparent)] group-hover:opacity-0 transition duration-700"
             style={{
-              backgroundImage: `url(${productImage.src})`,
-              backgroundPosition,
-              backgroundSize,
+              backgroundImage: `url(${gridLines.src})`,
             }}
           />
-        </div>
+          <motion.div
+            className="absolute inset-0 bg-[rgb(74,32,138)] bg-blend-overlay opacity-0 group-hover:opacity-100 transition duration-700"
+            style={{ maskImage, backgroundImage: `url(${gridLines.src})` }}
+          />
+          <div className="relative">
+            <h2 className="text-5xl md:text-6xl max-w-sm mx-auto tracking-tighter text-center font-medium">
+              AI-driven SEO for everyone
+            </h2>
+            <p className="text-center text-lg md:text-xl max-w-xs mx-auto text-white/70 px-4 mt-5 tracking-tight">
+              Achieve clear impactful results without complexity
+            </p>
+            <div className="flex justify-center mt-8">
+              <div>
+                <button className="relative py-2 px-3 rounded-lg font-medium text-sm bg-gradient-to-b from-[#190d2e] to-[#4a208a] shadow-[0px_0px_12px_#8c45ff]">
+                  <span>Join Waitlist</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   )
 }
+
+export default CallToAction
