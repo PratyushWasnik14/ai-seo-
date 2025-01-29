@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useRef, useEffect } from 'react'
 import { motion, useMotionValue, useMotionTemplate, animate } from 'framer-motion'
 import { DotLottiePlayer } from '@dotlottie/react-player'
@@ -86,12 +85,17 @@ const FeatureTab = ({
     animate(yPercentage, [0, 0, 100, 100, 0], animationOptions as any)
   }, [selected, xPercentage, yPercentage])
 
-  
+  const handleHover = () => {
+    if (dotLottieRef.current) {
+      dotLottieRef.current.seek(0)
+      dotLottieRef.current.play()
+    }
+  }
 
   return (
     <div
       ref={tabRef}
-      
+      onMouseEnter={handleHover}
       onClick={onClick}
       className="border border-white/15 flex p-2.5 rounded-xl gap-2.5 items-center lg:flex-1 relative"
     >
@@ -118,7 +122,7 @@ const FeatureTab = ({
           NEW
         </div>
       )}
-    </div>
+    </div>  
   )
 }
 
