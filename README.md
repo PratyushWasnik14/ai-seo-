@@ -28,5 +28,5 @@ A **modern, fully responsive AI-themed landing page** built from scratch using *
 
 1️⃣ **Clone the Repository**  
 ```npm
-git clone https://github.com/yourusername/ai-landing-page.git
+git clone https://github.com/PratyushWasnik14/ai-seo-.git
 cd ai-landing-page
