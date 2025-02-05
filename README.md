@@ -24,6 +24,6 @@ A **modern, fully responsive AI-themed landing page** built from scratch using *
 ✅ **Call to Action (CTA):** Encourages conversions with strong messaging.  
 ✅ **Footer:** Provides essential links and contact details.  
 
-🌐 **Live Demo:** [Click Here](ai-seo-xfjg.vercel.app)  
+🌐 **Live Demo:** [Click Here](https://ai-seo-xfjg.vercel.app/)  
 
 
