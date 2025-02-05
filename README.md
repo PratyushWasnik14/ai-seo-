@@ -26,9 +26,4 @@ A **modern, fully responsive AI-themed landing page** built from scratch using *
 
 🌐 **Live Demo:** [Click Here](ai-seo-xfjg.vercel.app)  
 
-## 🚀 How to Run Locally  
 
-1️⃣ **Clone the Repository**  
-```npm
-git clone https://github.com/PratyushWasnik14/ai-seo-.git
-cd ai-landing-page
